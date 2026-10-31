@@ -1,18 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;0,9..144,900;1,9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --bg-cream: #f6f2ec;
-  --bg-parchment: #ede7dc;
-  --ink-primary: #191715;
-  --ink-secondary: #4a4540;
-  --ink-muted: #807973;
+  --bg-cream: #f5f0e8;
+  --bg-parchment: #ece5d8;
+  --ink-primary: #171513;
+  --ink-secondary: #45403b;
+  --ink-muted: #857e77;
   --terracotta: #b86b4b;
   --terracotta-dark: #924d31;
   --amber-coffee: #7a3a14;
-  --card-glass: rgba(255, 255, 255, 0.75);
-  --card-border: rgba(255, 255, 255, 0.85);
-  --shadow-subtle: 0 20px 45px rgba(35, 22, 14, 0.09);
-  --shadow-hover: 0 24px 55px rgba(35, 22, 14, 0.16);
+  --card-glass: rgba(255, 255, 255, 0.78);
+  --card-border: rgba(255, 255, 255, 0.90);
+  --shadow-subtle: 0 16px 38px rgba(45, 28, 18, 0.08);
+  --shadow-hover: 0 22px 48px rgba(45, 28, 18, 0.14);
 }
 
 * {
@@ -24,7 +24,7 @@
 html {
   width: 100%;
   min-height: 100%;
-  scroll-behavior: auto; /* not smooth so GSAP scrub has 1:1 tactile scroll responsiveness */
+  scroll-behavior: auto;
 }
 
 body {
@@ -33,7 +33,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  overflow-y: auto; /* Guarantee native document vertical scroll */
+  overflow-y: auto;
   background-color: var(--bg-cream);
   color: var(--ink-primary);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -53,7 +53,7 @@ body {
 .coffee-scroll-track {
   position: relative;
   width: 100%;
-  height: 420vh; /* 420% height guarantees natural native scrolling */
+  height: 420vh;
 }
 
 .coffee-scroll-progress-bar {
@@ -80,7 +80,7 @@ body {
   height: 100vh;
   min-height: 600px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 45%, #faf7f2 0%, #f4eee6 65%, #eae3d7 100%);
+  background: radial-gradient(circle at 50% 48%, #faf6f0 0%, #f4eee6 65%, #eae2d5 100%);
   isolation: isolate;
 }
 
@@ -196,7 +196,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(25, 23, 21, 0.12);
   border-radius: 9999px;
@@ -250,10 +250,11 @@ body {
   height: 100%;
   z-index: 10;
   pointer-events: none;
+  display: block;
 }
 
 /* ──────────────────────────────────────────────────────────
-   3. GIGANTIC DISPLAY TYPOGRAPHY
+   3. GIGANTIC DISPLAY TYPOGRAPHY (FRAUNCES LUXURY FONT)
 ────────────────────────────────────────────────────────── */
 .display-typography-container {
   position: absolute;
@@ -271,20 +272,29 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(140px, 25vw, 420px);
-  font-weight: 950;
-  line-height: 0.78;
-  letter-spacing: -0.06em;
-  color: #191715;
+  font-family: 'Fraunces', Georgia, serif;
+  font-variation-settings: 'opsz' 144, 'wght' 900;
+  font-weight: 900;
+  font-size: clamp(80px, 15vw, 220px);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  color: #171513;
   opacity: 0;
   visibility: hidden;
   text-transform: uppercase;
+  max-width: 88vw;
+  text-align: center;
 }
 
 .display-title .char {
   display: inline-block;
   transform-origin: center bottom;
+}
+
+.display-title--sip .char-spacer {
+  display: inline-block;
+  width: clamp(140px, 20vw, 300px);
+  pointer-events: none;
 }
 
 .display-title--grind {
@@ -319,17 +329,18 @@ body {
   display: block;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: var(--ink-secondary);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
 
 .scene-micro-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 32px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-variation-settings: 'opsz' 72, 'wght' 900;
+  font-size: 34px;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--ink-primary);
   line-height: 1;
 }
@@ -337,7 +348,7 @@ body {
 /* FIND YOUR CUP HEADER (Scene 3) */
 .find-your-cup-header {
   position: absolute;
-  top: 15%;
+  top: 14%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -347,7 +358,7 @@ body {
 
 .cup-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(24px, 3.2vw, 42px);
+  font-size: clamp(22px, 2.8vw, 38px);
   font-weight: 850;
   letter-spacing: 0.08em;
   color: var(--ink-primary);
@@ -356,7 +367,7 @@ body {
 }
 
 .title-underline {
-  width: 140px;
+  width: 120px;
   height: 2px;
   background-color: var(--ink-primary);
   margin: 0 auto;
@@ -380,7 +391,7 @@ body {
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-border);
   border-radius: 20px;
-  padding: 22px 24px;
+  padding: 20px 22px;
   box-shadow: var(--shadow-subtle);
   opacity: 0;
   visibility: hidden;
@@ -396,7 +407,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .card-category {
@@ -430,11 +441,11 @@ body {
 
 .card-main-title {
   display: block;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink-primary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .card-detail {
@@ -442,34 +453,34 @@ body {
   font-size: 13px;
   font-weight: 500;
   color: var(--ink-secondary);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .card-desc {
   font-size: 12px;
   line-height: 1.5;
   color: var(--ink-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-/* Card 1: Origin */
+/* Card 1: Origin (Top Left) */
 .floating-card--origin {
-  top: 26%;
-  left: max(5vw, calc(50% - 560px));
-  width: 240px;
+  top: 22%;
+  left: max(4vw, calc(50% - 620px));
+  width: 230px;
 }
 
 .card-origin-footer {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding-top: 10px;
   border-top: 1px solid rgba(25, 23, 21, 0.08);
 }
 
 .mini-bag-icon {
-  width: 34px;
-  height: 44px;
+  width: 32px;
+  height: 42px;
   background: #cbb49c;
   border-radius: 4px;
   position: relative;
@@ -479,10 +490,10 @@ body {
 .mini-bag-icon::after {
   content: '';
   position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  height: 14px;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  height: 12px;
   background: #fff;
   border-radius: 2px;
 }
@@ -492,7 +503,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 8px;
+  height: 7px;
   background: #bfa58a;
   border-radius: 0 0 4px 4px;
 }
@@ -500,7 +511,7 @@ body {
 .origin-specs {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .origin-specs small {
@@ -509,11 +520,11 @@ body {
   color: var(--ink-secondary);
 }
 
-/* Card 2: Roast */
+/* Card 2: Roast (Bottom Left) */
 .floating-card--roast {
-  top: 55%;
-  left: max(5vw, calc(50% - 560px));
-  width: 260px;
+  bottom: 16%;
+  left: max(4vw, calc(50% - 620px));
+  width: 250px;
 }
 
 .roast-action-row {
@@ -558,18 +569,18 @@ body {
   background: var(--terracotta);
 }
 
-/* Card 3: Flavor */
+/* Card 3: Flavor (Right Side) */
 .floating-card--flavor {
-  top: 42%;
-  right: max(5vw, calc(50% - 560px));
-  width: 260px;
+  top: 32%;
+  right: max(4vw, calc(50% - 620px));
+  width: 250px;
 }
 
 .flavor-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .flavor-chip {
@@ -585,7 +596,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid rgba(25, 23, 21, 0.08);
 }
 
@@ -608,7 +619,7 @@ body {
 ────────────────────────────────────────────────────────── */
 .cup-pagination {
   position: absolute;
-  bottom: 14%;
+  bottom: 12%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -653,7 +664,7 @@ body {
   height: 44px;
   border-radius: 50%;
   border: 1px solid rgba(25, 23, 21, 0.2);
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(10px);
   display: grid;
   place-items: center;
@@ -1116,7 +1127,8 @@ body {
 }
 
 .signup-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Fraunces', Georgia, serif;
+  font-variation-settings: 'opsz' 72, 'wght' 900;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: -0.02em;
@@ -1279,6 +1291,10 @@ body {
 
   .cup-title {
     font-size: 20px;
+  }
+
+  .display-title {
+    font-size: clamp(60px, 18vw, 120px);
   }
 
   .floating-card--origin {

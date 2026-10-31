@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -88,7 +89,7 @@ export default function CoffeeStory() {
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
-      mouseTarget.current = { x: x * 0.08, y: y * 0.06 };
+      mouseTarget.current = { x: x * 0.06, y: y * 0.04 };
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -117,32 +118,37 @@ export default function CoffeeStory() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.12;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    camera.position.set(0, 0.05, 11.2);
 
-    // Studio Lighting
-    const hemiLight = new THREE.HemisphereLight(0xfffbf2, 0x8a7a6c, 1.9);
+    // Studio Environment Map for realistic metal & glass reflections
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+    camera.position.set(0, 0.6, 9.8);
+
+    // Studio Key, Rim and Warm Fill Lights
+    const hemiLight = new THREE.HemisphereLight(0xfffaee, 0x827060, 2.2);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff3e2, 3.4);
-    keyLight.position.set(-3.5, 6.5, 7.5);
+    const keyLight = new THREE.DirectionalLight(0xfff6ea, 3.8);
+    keyLight.position.set(-3.8, 6.0, 7.0);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xe5f0ff, 1.8);
-    rimLight.position.set(5.5, 2.0, 4.0);
+    const rimLight = new THREE.DirectionalLight(0xe2eeff, 2.4);
+    rimLight.position.set(5.0, 2.5, 4.0);
     scene.add(rimLight);
 
-    const warmFill = new THREE.PointLight(0xffd1a4, 1.2, 14);
-    warmFill.position.set(0, -2, 4);
+    const warmFill = new THREE.PointLight(0xffd5ad, 1.4, 16);
+    warmFill.position.set(0, -1.8, 4.5);
     scene.add(warmFill);
 
     // 1. Grinder Assembly
@@ -175,7 +181,7 @@ export default function CoffeeStory() {
       const width = rootElement.clientWidth;
       const height = rootElement.clientHeight;
       camera.aspect = width / height;
-      camera.position.z = width < 768 ? 13.8 : 11.2;
+      camera.position.z = width < 768 ? 12.8 : 9.8;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
       ScrollTrigger.refresh();
@@ -192,11 +198,11 @@ export default function CoffeeStory() {
       const elapsedTime = clock.getElapsedTime();
 
       // Smooth camera parallax
-      mouseCurrent.current.x += (mouseTarget.current.x - mouseCurrent.current.x) * 0.06;
-      mouseCurrent.current.y += (mouseTarget.current.y - mouseCurrent.current.y) * 0.06;
-      camera.position.x = mouseCurrent.current.x * 2.5;
-      camera.position.y = 0.05 + mouseCurrent.current.y * 2.0;
-      camera.lookAt(0, 0, 0);
+      mouseCurrent.current.x += (mouseTarget.current.x - mouseCurrent.current.x) * 0.05;
+      mouseCurrent.current.y += (mouseTarget.current.y - mouseCurrent.current.y) * 0.05;
+      camera.position.x = mouseCurrent.current.x * 2.2;
+      camera.position.y = 0.6 + mouseCurrent.current.y * 1.8;
+      camera.lookAt(0, -0.05, 0);
 
       // Idle rotations & subtle alive motions
       if (groundsParticles.visible && (groundsParticles.material as THREE.PointsMaterial).opacity > 0.01) {
@@ -208,12 +214,12 @@ export default function CoffeeStory() {
         sp.position.y += delta * (0.2 + (i % 3) * 0.1);
         sp.position.x += Math.sin(elapsedTime * 2 + i) * 0.002;
         if (sp.position.y > 1.6) {
-          sp.position.y = 0.65;
+          sp.position.y = 0.68;
         }
       });
 
       // Liquid surface ripple rotation in cup
-      cupData.liquidMesh.rotation.z += delta * 0.15;
+      cupData.liquidMesh.rotation.z += delta * 0.12;
 
       renderer.render(scene, camera);
       animId = requestAnimationFrame(render);
@@ -226,60 +232,60 @@ export default function CoffeeStory() {
     // ───────────────────────────────────────────
     // SCENE 1: GRIND (0.0 -> 3.5s)
     // ───────────────────────────────────────────
-    tl
-      // Initial state
-      .fromTo('.display-title--grind', { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 1.0 }, 0)
-      .fromTo('.scene-label--grind', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 0)
+    // Initial state: GRIND title & label are 100% VISIBLE ON LOAD
+    gsap.set('.display-title--grind', { autoAlpha: 1, scale: 1 });
+    gsap.set('.scene-label--grind', { autoAlpha: 1, y: 0 });
 
+    tl
       // Whole beans cascade down into hopper
       .to(beans.map((b) => b.position), {
-        y: (i) => 1.35 + (i % 4) * 0.08,
-        x: (i) => Math.cos(i) * 0.14,
-        z: (i) => Math.sin(i) * 0.14,
-        stagger: 0.04,
-        duration: 1.8,
+        y: (i) => 1.25 + (i % 4) * 0.08,
+        x: (i) => Math.cos(i) * 0.12,
+        z: (i) => Math.sin(i) * 0.12,
+        stagger: 0.035,
+        duration: 1.6,
         ease: 'power2.in',
       }, 0.2)
 
       // Exploded View: Outer shells separate outwards (matching frame_02.8s.jpg)
-      .to(grinderData.leftShell.position, { x: -1.5, z: -0.15, duration: 1.5 }, 1.8)
-      .to(grinderData.leftShell.rotation, { y: 0.28, duration: 1.5 }, 1.8)
-      .to(grinderData.rightShell.position, { x: 1.5, z: -0.15, duration: 1.5 }, 1.8)
-      .to(grinderData.rightShell.rotation, { y: -0.28, duration: 1.5 }, 1.8)
+      .to(grinderData.leftShell.position, { x: -1.75, z: -0.15, duration: 1.5 }, 1.8)
+      .to(grinderData.leftShell.rotation, { y: 0.32, duration: 1.5 }, 1.8)
+      .to(grinderData.rightShell.position, { x: 1.75, z: -0.15, duration: 1.5 }, 1.8)
+      .to(grinderData.rightShell.rotation, { y: -0.32, duration: 1.5 }, 1.8)
 
       // Hopper lifts upward
-      .to(grinderData.hopperGroup.position, { y: 1.95, duration: 1.5 }, 1.8)
+      .to(grinderData.hopperGroup.position, { y: 2.1, duration: 1.5 }, 1.8)
 
-      // Conical burr spins and reveals cutting flutes
+      // Conical burr spins and reveals sharp flutes
       .to(grinderData.burrCore.rotation, { y: Math.PI * 4, duration: 1.6 }, 1.9)
       .to(grinderData.burrCore.position, { y: -0.05, duration: 1.5 }, 1.8)
 
       // Grounds particle shower activates
-      .to(groundsParticles.material as THREE.PointsMaterial, { opacity: 0.95, duration: 0.6 }, 2.2)
+      .to(groundsParticles.material as THREE.PointsMaterial, { opacity: 0.95, duration: 0.5 }, 2.2)
       .to(groundsParticles.position, { y: -0.85, duration: 1.4 }, 2.2)
 
       // ───────────────────────────────────────────
       // TRANSITION 1 -> 2: GRIND TO POUR (3.5 -> 7.0s)
       // ───────────────────────────────────────────
-      // Grinder exploded parts fly upward out of view
-      .to(grinderData.group.position, { y: 5.2, duration: 1.4, ease: 'power2.in' }, 3.5)
-      .to(grinderData.group.scale, { x: 0.55, y: 0.55, z: 0.55, duration: 1.4 }, 3.5)
-      .to(beansGroup.position, { y: 5.5, duration: 1.2 }, 3.5)
-      .to(groundsParticles.position, { y: -1.8, duration: 1.0 }, 3.5)
-      .to(groundsParticles.material as THREE.PointsMaterial, { opacity: 0, duration: 0.6 }, 4.0)
+      // Grinder exploded parts fly upward completely out of view
+      .to(grinderData.group.position, { y: 6.5, duration: 1.3, ease: 'power2.in' }, 3.5)
+      .to(grinderData.group.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 1.3 }, 3.5)
+      .to(beansGroup.position, { y: 7.0, duration: 1.2 }, 3.5)
+      .to(groundsParticles.position, { y: -2.0, duration: 1.0 }, 3.5)
+      .to(groundsParticles.material as THREE.PointsMaterial, { opacity: 0, duration: 0.5 }, 4.0)
 
       // Text transition: GRIND fades, POUR arrives
-      .to('.display-title--grind', { autoAlpha: 0, y: -50, duration: 0.8 }, 3.5)
-      .to('.scene-label--grind', { autoAlpha: 0, duration: 0.6 }, 3.5)
-      .fromTo('.display-title--pour', { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 4.0)
-      .fromTo('.scene-label--pour', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 4.0)
+      .to('.display-title--grind', { autoAlpha: 0, y: -40, duration: 0.7 }, 3.5)
+      .to('.scene-label--grind', { autoAlpha: 0, duration: 0.5 }, 3.5)
+      .fromTo('.display-title--pour', { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 4.0)
+      .fromTo('.scene-label--pour', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 4.0)
 
       // Pour Set enters center stage
       .fromTo(pourData.group.scale, { x: 0.001, y: 0.001, z: 0.001 }, { x: 1, y: 1, z: 1, duration: 1.4, ease: 'power2.out' }, 3.8)
-      .fromTo(pourData.kettle.position, { x: 3.8, y: 1.9 }, { x: 1.65, y: 0.75, duration: 1.4, ease: 'power2.out' }, 4.0)
+      .fromTo(pourData.kettle.position, { x: 3.8, y: 1.9 }, { x: 1.70, y: 0.80, duration: 1.4, ease: 'power2.out' }, 4.0)
 
       // Kettle tilts into pouring angle
-      .to(pourData.kettle.rotation, { z: -0.28, duration: 1.1 }, 4.8)
+      .to(pourData.kettle.rotation, { z: -0.30, duration: 1.0 }, 4.8)
 
       // Water stream arcs into coffee bed
       .fromTo(pourData.waterStream.scale, { x: 0.001, y: 0.001, z: 0.001 }, { x: 1, y: 1, z: 1, duration: 0.8, ease: 'power2.out' }, 5.2)
@@ -297,31 +303,29 @@ export default function CoffeeStory() {
       // ───────────────────────────────────────────
       // TRANSITION 2 -> 3: POUR TO SIP (7.0 -> 10.0s)
       // ───────────────────────────────────────────
-      // Pour set finishes and glides out to the left
-      .to(pourData.waterStream.scale, { y: 0.001, duration: 0.5 }, 6.8)
-      .to(pourData.kettle.rotation, { z: 0, duration: 0.6 }, 6.9)
-      .to(pourData.group.position, { x: -4.5, duration: 1.3, ease: 'power2.in' }, 7.1)
-      .to(pourData.group.scale, { x: 0.6, y: 0.6, z: 0.6, duration: 1.3 }, 7.1)
+      // Pour set finishes and completely disappears (scale: 0.001) so it never overlaps Scene 3!
+      .to(pourData.waterStream.scale, { y: 0.001, duration: 0.4 }, 6.8)
+      .to(pourData.kettle.rotation, { z: 0, duration: 0.5 }, 6.9)
+      .to(pourData.group.position, { x: -6.0, duration: 1.2, ease: 'power2.in' }, 7.0)
+      .to(pourData.group.scale, { x: 0.001, y: 0.001, z: 0.001, duration: 1.2 }, 7.0)
 
       // Text transition: POUR fades, SIP and FIND YOUR CUP arrive
-      .to('.display-title--pour', { autoAlpha: 0, y: -50, duration: 0.7 }, 7.0)
-      .to('.scene-label--pour', { autoAlpha: 0, duration: 0.5 }, 7.0)
-      .fromTo('.display-title--sip', { autoAlpha: 0, scale: 0.88 }, { autoAlpha: 1, scale: 1, duration: 0.9 }, 7.4)
-      .fromTo('.find-your-cup-header', { autoAlpha: 0, y: -25 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 7.4)
-      .fromTo('.scene-label--sip', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 7.4)
+      .to('.display-title--pour', { autoAlpha: 0, y: -40, duration: 0.6 }, 7.0)
+      .to('.scene-label--pour', { autoAlpha: 0, duration: 0.4 }, 7.0)
+      .fromTo('.display-title--sip', { autoAlpha: 0, scale: 0.90 }, { autoAlpha: 1, scale: 1, duration: 0.8 }, 7.3)
+      .fromTo('.find-your-cup-header', { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 7.3)
+      .fromTo('.scene-label--sip', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 7.3)
 
       // Artisan Ceramic Cup enters center stage
-      .fromTo(cupData.group.scale, { x: 0.001, y: 0.001, z: 0.001 }, { x: 1.15, y: 1.15, z: 1.15, duration: 1.4, ease: 'back.out(1.2)' }, 7.3)
-      .to(cupData.ripplePlane.material as THREE.MeshStandardMaterial, { opacity: 0.65, duration: 0.7 }, 7.6)
-      .to(cupData.ripplePlane.scale, { x: 1.4, y: 1.4, duration: 1.1 }, 7.6)
+      .fromTo(cupData.group.scale, { x: 0.001, y: 0.001, z: 0.001 }, { x: 1.15, y: 1.15, z: 1.15, duration: 1.3, ease: 'back.out(1.2)' }, 7.2)
 
       // 3 Floating Interactive Cards spring into view
-      .fromTo('.floating-card--origin', { autoAlpha: 0, x: -40, y: -15 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.9, ease: 'power2.out' }, 8.0)
-      .fromTo('.floating-card--roast', { autoAlpha: 0, x: -40, y: 20 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.9, ease: 'power2.out' }, 8.2)
-      .fromTo('.floating-card--flavor', { autoAlpha: 0, x: 40, y: 10 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.9, ease: 'power2.out' }, 8.4)
+      .fromTo('.floating-card--origin', { autoAlpha: 0, x: -30, y: -10 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.8, ease: 'power2.out' }, 7.6)
+      .fromTo('.floating-card--roast', { autoAlpha: 0, x: -30, y: 15 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.8, ease: 'power2.out' }, 7.8)
+      .fromTo('.floating-card--flavor', { autoAlpha: 0, x: 30, y: 10 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.8, ease: 'power2.out' }, 7.8)
 
       // Pagination dots reveal
-      .fromTo('.cup-pagination', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 8.6);
+      .fromTo('.cup-pagination', { autoAlpha: 0, y: 15 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 7.8);
 
     // ScrollTrigger connected to trackElement
     const st = ScrollTrigger.create({
@@ -362,6 +366,7 @@ export default function CoffeeStory() {
       cancelAnimationFrame(animId);
       st.kill();
       tl.kill();
+      pmremGenerator.dispose();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
           obj.geometry.dispose();
@@ -446,8 +451,11 @@ export default function CoffeeStory() {
             <span className="char">R</span>
           </div>
 
-          {/* SIP Display Title */}
+          {/* SIP Display Title (Framing the mug with GR on left and SIP on right matching video) */}
           <div className="display-title display-title--sip">
+            <span className="char">G</span>
+            <span className="char">R</span>
+            <span className="char-spacer" aria-hidden="true" />
             <span className="char">S</span>
             <span className="char">I</span>
             <span className="char">P</span>
